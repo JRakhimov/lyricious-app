@@ -1,0 +1,56 @@
+name: lyricious
+description: A new Flutter application.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  auto_route: ^2.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  auto_route_generator: ^2.1.0
+  json_serializable: ^4.1.3
+  build_runner:
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/lyricious_transparent_text.png
+
+  fonts:
+#    - family: AppIcons
+#      fonts:
+#        - asset: fonts/AppIcons.ttf
+    - family: Comfortaa
+      fonts:
+        - asset: fonts/comfortaa/Comfortaa-Regular.ttf
+        - asset: fonts/comfortaa/Comfortaa-Bold.ttf
+          weight: 700
+    - family: Gilroy
+      fonts:
+        - asset: fonts/gilroy/Gilroy-Regular.ttf
+        - asset: fonts/gilroy/Gilroy-Semibold.ttf
+          weight: 600
+        - asset: fonts/gilroy/Gilroy-bold.ttf
+          weight: 700
