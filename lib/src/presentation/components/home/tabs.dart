@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lyricious/src/presentation/pages/pages.dart';
 import 'package:lyricious/src/presentation/theme/colors.dart';
+
+class TabOption {
+  String title;
+  Widget Function() bodyBuilder;
+
+  TabOption({
+    required this.title,
+    required this.bodyBuilder,
+  });
+}
 
 class AppTabs extends StatefulWidget {
   int activeIndex;

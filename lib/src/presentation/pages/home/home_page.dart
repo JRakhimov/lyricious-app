@@ -1,18 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lyricious/src/core/utils/extensions.dart';
 import 'package:lyricious/src/presentation/components/components.dart';
 import 'package:lyricious/src/presentation/components/home/header.dart';
+import 'package:lyricious/src/presentation/pages/home/cubit/home_page_cubit.dart';
 import 'package:lyricious/src/presentation/theme/colors.dart';
-
-class TabOption {
-  String title;
-  Widget Function() bodyBuilder;
-
-  TabOption({
-    required this.title,
-    required this.bodyBuilder,
-  });
-}
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,42 +13,42 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<TabOption> _tabOptions = [
-    TabOption(title: "Liked", bodyBuilder: () => HomeLikedSection()),
-    TabOption(title: "Recently", bodyBuilder: () => Container()),
-    TabOption(title: "Top", bodyBuilder: () => Container()),
-    TabOption(title: "Playlist", bodyBuilder: () => Container()),
-  ];
-
-  int currentIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: CustomScrollView(
-        physics: BouncingScrollPhysics(),
-        slivers: [
-          SliverPersistentHeader(delegate: HomePageHeader()),
-          SliverPadding(
-            padding: EdgeInsets.only(top: 15, left: 15, right: 15),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, i) {
-                  if (i == 0)
-                    return AppTabs(
-                      activeIndex: currentIndex,
-                      tabOptions: _tabOptions,
-                      onSelect: (index) => setState(() => currentIndex = index),
-                    );
+      body: BlocProvider<HomePageCubit>(
+        create: (_) => HomePageCubit(),
+        child: CustomScrollView(
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            SliverPersistentHeader(delegate: HomePageHeader()),
+            SliverPadding(
+              padding: EdgeInsets.only(top: 15, left: 15, right: 15),
+              sliver: BlocBuilder<HomePageCubit, HomePageState>(
+                builder: (context, state) {
+                  final cubit = getCubit<HomePageCubit>(context);
 
-                  return _tabOptions[currentIndex].bodyBuilder();
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, i) {
+                        if (i == 0)
+                          return AppTabs(
+                            tabOptions: cubit.tabOptions,
+                            activeIndex: state.currentTabOption,
+                            onSelect: (index) => cubit.setTabOption(index),
+                          );
+
+                        return cubit.tabOptions[state.currentTabOption].bodyBuilder();
+                      },
+                      childCount: 2,
+                    ),
+                  );
                 },
-                childCount: 2,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

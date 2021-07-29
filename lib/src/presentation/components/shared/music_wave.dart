@@ -31,11 +31,40 @@ class __MusicWaveState extends State<_MusicWave> with SingleTickerProviderStateM
   }
 
   @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: 5,
       height: animation.value,
       decoration: BoxDecoration(color: widget.color),
+    );
+  }
+}
+
+class MusicVisualizerColorful extends StatelessWidget {
+  List<Color> colors = [
+    AppColors.violet,
+    AppColors.red,
+    AppColors.green,
+    AppColors.blue,
+    AppColors.pink,
+    AppColors.yellow,
+  ];
+  List<int> durations = [400, 700, 600, 450, 500, 800];
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: List.generate(
+        10,
+        (index) => _MusicWave(duration: durations[index % 5], color: colors[index % 6]),
+      ),
     );
   }
 }

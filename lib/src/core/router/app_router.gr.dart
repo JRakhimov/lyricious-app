@@ -7,7 +7,7 @@
 import 'package:auto_route/auto_route.dart' as _i1;
 import 'package:flutter/material.dart' as _i2;
 
-import '../../domain/models/lyrics/lyrics_model.dart' as _i4;
+import '../../domain/models/models.dart' as _i4;
 import '../../presentation/pages/pages.dart' as _i3;
 
 class AppRouter extends _i1.RootStackRouter {
@@ -29,8 +29,9 @@ class AppRouter extends _i1.RootStackRouter {
     LyricsRoute.name: (routeData) => _i1.CupertinoPageX<dynamic>(
         routeData: routeData,
         builder: (data) {
-          final args = data.argsAs<LyricsRouteArgs>();
-          return _i3.LyricsPage(lyrics: args.lyrics);
+          final args = data.argsAs<LyricsRouteArgs>(
+              orElse: () => const LyricsRouteArgs());
+          return _i3.LyricsPage(lyrics: args.lyrics, song: args.song);
         })
   };
 
@@ -55,15 +56,18 @@ class HomeRoute extends _i1.PageRouteInfo {
 }
 
 class LyricsRoute extends _i1.PageRouteInfo<LyricsRouteArgs> {
-  LyricsRoute({required _i4.LyricsModel lyrics})
+  LyricsRoute({_i4.LyricsModel? lyrics, _i4.SongModel? song})
       : super(name,
-            path: '/lyrics-page', args: LyricsRouteArgs(lyrics: lyrics));
+            path: '/lyrics-page',
+            args: LyricsRouteArgs(lyrics: lyrics, song: song));
 
   static const String name = 'LyricsRoute';
 }
 
 class LyricsRouteArgs {
-  const LyricsRouteArgs({required this.lyrics});
+  const LyricsRouteArgs({this.lyrics, this.song});
 
-  final _i4.LyricsModel lyrics;
+  final _i4.LyricsModel? lyrics;
+
+  final _i4.SongModel? song;
 }

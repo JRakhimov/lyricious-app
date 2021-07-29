@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lyricious/src/domain/models/models.dart';
 import 'package:lyricious/src/presentation/theme/colors.dart';
@@ -51,9 +52,10 @@ class SongTile extends StatelessWidget {
             height: 60,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12.5),
-              child: Image(
-                image: NetworkImage(song.albumPic!),
-                errorBuilder: (context, _, __) => albumPicStock,
+              child: CachedNetworkImage(
+                imageUrl: song.albumPic!,
+                placeholder: (_, __) => albumPicStock,
+                errorWidget: (_, __, ___) => albumPicStock,
               ),
             ),
           )

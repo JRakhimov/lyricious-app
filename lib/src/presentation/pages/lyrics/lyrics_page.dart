@@ -3,13 +3,17 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lyricious/src/domain/models/models.dart';
+import 'package:lyricious/src/domain/repositories/lyrics_repository.dart';
+import 'package:lyricious/src/presentation/components/shared/music_wave.dart';
 import 'package:lyricious/src/presentation/components/shared/song_tile.dart';
+import 'package:lyricious/src/presentation/components/shimmers/lyrics_page_shimmer.dart';
 import 'package:lyricious/src/presentation/theme/colors.dart';
 
 class LyricsPage extends StatefulWidget {
-  LyricsModel lyrics;
+  LyricsModel? lyrics;
+  SongModel? song;
 
-  LyricsPage({required this.lyrics});
+  LyricsPage({this.lyrics, this.song});
 
   @override
   _LyricsPageState createState() => _LyricsPageState();
@@ -21,13 +25,29 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
   int speedFactor = 20;
 
   late Color color;
+  LyricsModel? lyrics;
 
   @override
   void initState() {
     super.initState();
 
     color = AppColors.getRandomColor();
-    Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+
+    if (widget.lyrics != null) {
+      lyrics = widget.lyrics;
+      Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+      return;
+    }
+
+    LyricsRepository.getLyrics(name: widget.song!.name, artist: widget.song!.artist).then((value) {
+      setState(() {
+        lyrics = value;
+
+        if (value.content != "") {
+          Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+        }
+      });
+    });
   }
 
   @override
@@ -60,7 +80,17 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final lines = widget.lyrics.content.replaceAll("\n\n", "\n").split("\n");
+    if (lyrics == null) {
+      return Scaffold(
+        backgroundColor: AppColors.black,
+        body: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: LyricsPageShimmer(),
+        ),
+      );
+    }
+
+    final lines = lyrics!.content.replaceAll("\n\n", "\n").split("\n");
 
     return Scaffold(
       backgroundColor: AppColors.black,
@@ -70,7 +100,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
           children: [
             SafeArea(
               child: SongTile(
-                song: widget.lyrics.song,
+                song: lyrics!.song,
                 albumColor: color,
                 isLight: true,
               ),
@@ -79,36 +109,56 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
             Expanded(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
-                child: Container(
-                  decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(30)),
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-                  child: NotificationListener(
-                    onNotification: (notif) {
-                      if (notif is ScrollEndNotification && scroll) {
-                        Timer(Duration(seconds: 1), () => _scroll());
-                      }
+                child: lines[0] != ""
+                    ? Container(
+                        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(30)),
+                        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+                        child: NotificationListener(
+                          onNotification: (notif) {
+                            if (notif is ScrollEndNotification && scroll) {
+                              Timer(Duration(seconds: 1), () => _scroll());
+                            }
 
-                      return true;
-                    },
-                    child: ListView.separated(
-                      controller: _scrollController,
-                      physics: BouncingScrollPhysics(),
-                      itemBuilder: (context, i) {
-                        final style = TextStyle(
-                          fontSize: 28,
-                          fontFamily: "Gilroy",
-                          fontWeight: FontWeight.w700,
-                        );
+                            return true;
+                          },
+                          child: ListView.separated(
+                            controller: _scrollController,
+                            physics: BouncingScrollPhysics(),
+                            itemBuilder: (context, i) {
+                              final style = TextStyle(
+                                fontSize: 28,
+                                fontFamily: "Gilroy",
+                                fontWeight: FontWeight.w700,
+                              );
 
-                        if (i == 0) return Text("Source: ${widget.lyrics.service}", style: style);
+                              if (i == 0) return Text("Source: ${lyrics!.service}", style: style);
 
-                        return Text(lines[i - 1], style: style);
-                      },
-                      separatorBuilder: (context, i) => SizedBox(height: 35),
-                      itemCount: lines.length + 1,
-                    ),
-                  ),
-                ),
+                              return Text(lines[i - 1], style: style);
+                            },
+                            separatorBuilder: (context, i) => SizedBox(height: 35),
+                            itemCount: lines.length + 1,
+                          ),
+                        ))
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 100,
+                              child: MusicVisualizerColorful(),
+                            ),
+                            SizedBox(height: 20),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 30),
+                              child: Text(
+                                "We didn't find the lyrics for this song, but you have great taste :)",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, fontFamily: "Gilroy"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
               ),
             ),
           ],

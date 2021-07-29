@@ -2,7 +2,7 @@
     package="com.yellow.lyricious">
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="lyricious"
+        android:label="Lyricious"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
