@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lyricious/src/core/router/app_router.gr.dart';
 import 'package:lyricious/src/domain/models/models.dart';
+import 'package:lyricious/src/domain/repositories/repositories.dart';
 import 'package:lyricious/src/presentation/components/components.dart';
 import 'package:lyricious/src/presentation/theme/colors.dart';
 
@@ -51,7 +52,7 @@ class HomeLikedSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: Hive.box<SongModel>('liked').listenable(),
+      valueListenable: MemoryRepository.likedBox().listenable(),
       builder: (BuildContext context, Box<SongModel> box, Widget? child) {
         return Column(
           children: [

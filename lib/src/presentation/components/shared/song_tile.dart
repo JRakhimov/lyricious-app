@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:like_button/like_button.dart';
 import 'package:lyricious/src/domain/models/models.dart';
+import 'package:lyricious/src/domain/repositories/memory_repository.dart';
 import 'package:lyricious/src/presentation/icons/app_icons.dart';
 import 'package:lyricious/src/presentation/theme/colors.dart';
 
@@ -49,9 +49,6 @@ class SongTile extends StatelessWidget {
         ),
       ),
     );
-
-    final box = Hive.box<SongModel>("liked");
-    final key = "${song.name}_${[song.artists]}";
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -105,7 +102,7 @@ class SongTile extends StatelessWidget {
               dotPrimaryColor: AppColors.red,
               dotSecondaryColor: AppColors.yellow,
             ),
-            isLiked: box.get(key) != null,
+            isLiked: MemoryRepository.getFromLiked(MemoryRepository.generateSongKey(song)) != null,
             likeBuilder: (bool isLiked) {
               return Icon(
                 AppIcons.heart,
@@ -114,14 +111,12 @@ class SongTile extends StatelessWidget {
               );
             },
             onTap: (_) async {
-              final savedSong = box.get(key);
-
-              if (savedSong != null) {
-                box.delete(key);
+              if (MemoryRepository.getFromLiked(MemoryRepository.generateSongKey(song)) != null) {
+                MemoryRepository.removeFromLiked(song);
                 return false;
               }
 
-              box.put(key, song);
+              MemoryRepository.putToLiked(song);
               return true;
             },
           ),

@@ -6,6 +6,7 @@ import 'package:lyricious/src/core/utils/extensions.dart';
 import 'package:lyricious/src/domain/cubits/cubits.dart';
 import 'package:lyricious/src/domain/models/models.dart';
 import 'package:lyricious/src/domain/repositories/lyrics_repository.dart';
+import 'package:lyricious/src/domain/repositories/memory_repository.dart';
 import 'package:lyricious/src/presentation/components/shared/music_wave.dart';
 import 'package:lyricious/src/presentation/components/shared/song_tile.dart';
 import 'package:lyricious/src/presentation/components/shimmers/lyrics_page_shimmer.dart';
@@ -46,6 +47,9 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
         lyrics = value;
 
         if (value.lines.length > 0) {
+          widget.song.lyrics = lyrics;
+          MemoryRepository.putToRecently(widget.song);
+
           Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
         }
       });

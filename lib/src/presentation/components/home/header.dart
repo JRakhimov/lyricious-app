@@ -83,12 +83,14 @@ class __HeaderState extends State<_Header> {
                       ? () async {
                           if (state.spotifyPlayerStatus?.track == null) return;
 
+                          final urlSplitted = state.spotifyPlayerStatus!.track!.imageUri.raw.split(":");
+
                           AutoRouter.of(context).push(
                             LyricsRoute(
                               song: SongModel(
                                 artists: [state.spotifyPlayerStatus!.track!.artist.name],
                                 name: state.spotifyPlayerStatus!.track!.name,
-                                albumPic: state.spotifyPlayerStatus!.track!.imageUri.raw,
+                                albumPic: "https://i.scdn.co/image/${urlSplitted.last}",
                               ),
                             ),
                           );
