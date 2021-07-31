@@ -42,6 +42,15 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
       return;
     }
 
+    final key = MemoryRepository.generateSongKey(widget.song);
+    final song = MemoryRepository.getFromLiked(key) ?? MemoryRepository.getFromRecently(key);
+
+    if (song != null) {
+      lyrics = song.lyrics;
+      Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+      return;
+    }
+
     LyricsRepository.getLyrics(name: widget.song.name, artist: widget.song.artists[0]).then((value) {
       setState(() {
         lyrics = value;
@@ -130,22 +139,38 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
 
                             return true;
                           },
-                          child: ListView.separated(
-                            controller: _scrollController,
-                            physics: BouncingScrollPhysics(),
-                            itemBuilder: (context, i) {
-                              final style = TextStyle(
-                                fontSize: 28,
-                                fontFamily: "Gilroy",
-                                fontWeight: FontWeight.w700,
-                              );
-
-                              if (i == 0) return Text("Source: ${lyrics!.service}", style: style);
-
-                              return Text(lines[i - 1].text, style: style);
+                          child: ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: <Color>[
+                                  color,
+                                  Colors.transparent,
+                                  Colors.transparent,
+                                  Colors.transparent,
+                                  color
+                                ],
+                              ).createShader(bounds);
                             },
-                            separatorBuilder: (context, i) => SizedBox(height: 35),
-                            itemCount: lines.length + 1,
+                            blendMode: BlendMode.dstOut,
+                            child: ListView.separated(
+                              controller: _scrollController,
+                              physics: BouncingScrollPhysics(),
+                              itemBuilder: (context, i) {
+                                final style = TextStyle(
+                                  fontSize: 28,
+                                  fontFamily: "Gilroy",
+                                  fontWeight: FontWeight.w700,
+                                );
+
+                                if (i == 0) return Text("Source: ${lyrics!.service}", style: style);
+
+                                return Text(lines[i - 1].text, style: style);
+                              },
+                              separatorBuilder: (context, i) => SizedBox(height: 35),
+                              itemCount: lines.length + 1,
+                            ),
                           ),
                         ))
                     : Center(

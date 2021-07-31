@@ -51,6 +51,7 @@ class HomeRecentlySection extends StatelessWidget {
                 ),
               ),
               onTap: () => MemoryRepository.clearRecently(),
+              onLongPress: () => MemoryRepository.clearLiked(),
             )
         ],
       ),

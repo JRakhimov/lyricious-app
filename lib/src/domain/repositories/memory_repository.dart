@@ -5,7 +5,10 @@ class MemoryRepository {
   static const LIKED_BOX = "liked";
   static const RECENTLY_BOX = "recently";
 
-  static generateSongKey(SongModel song) => "${song.name}_${song.artists[0]}";
+  static String generateSongKey(SongModel song) => [
+        song.name.replaceAll(" ", ""),
+        song.artists[0].replaceAll(" ", ""),
+      ].join("_");
 
   static Box<SongModel> likedBox() => Hive.box<SongModel>(LIKED_BOX);
 
@@ -23,12 +26,20 @@ class MemoryRepository {
     return Hive.box<SongModel>(LIKED_BOX).get(key);
   }
 
+  static clearLiked() {
+    Hive.box<SongModel>(LIKED_BOX).clear();
+  }
+
   static putToRecently(SongModel song) {
     Hive.box<SongModel>(RECENTLY_BOX).put(generateSongKey(song), song);
   }
 
   static removeFromRecently(SongModel song) {
     Hive.box<SongModel>(RECENTLY_BOX).delete(generateSongKey(song));
+  }
+
+  static SongModel? getFromRecently(String key) {
+    return Hive.box<SongModel>(RECENTLY_BOX).get(key);
   }
 
   static clearRecently() {

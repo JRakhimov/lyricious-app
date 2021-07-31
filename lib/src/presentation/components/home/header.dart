@@ -36,15 +36,17 @@ class __HeaderState extends State<_Header> {
             children: [
               Container(height: 20, child: MusicVisualizer()),
               SizedBox(width: 10),
-              Text(
-                [
-                  state.spotifyPlayerStatus!.track!.artist.name,
-                  state.spotifyPlayerStatus!.track!.name,
-                ].join(" - "),
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-                style: style,
+              Flexible(
+                child: Text(
+                  [
+                    state.spotifyPlayerStatus!.track!.artist.name,
+                    state.spotifyPlayerStatus!.track!.name,
+                  ].join(" - "),
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
+                  style: style,
+                ),
               ),
             ],
           ),
