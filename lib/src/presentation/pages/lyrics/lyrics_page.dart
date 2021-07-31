@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lyricious/src/core/utils/extensions.dart';
+import 'package:lyricious/src/domain/cubits/cubits.dart';
 import 'package:lyricious/src/domain/models/models.dart';
 import 'package:lyricious/src/domain/repositories/lyrics_repository.dart';
 import 'package:lyricious/src/presentation/components/shared/music_wave.dart';
@@ -52,6 +54,8 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    inject<AppCubit>().fetchPlayerStatus();
+
     _scrollController.dispose();
     super.dispose();
   }
