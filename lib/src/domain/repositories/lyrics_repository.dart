@@ -13,6 +13,6 @@ class LyricsRepository {
       return LyricsModel.fromJson(response.data['lyrics']);
     }
 
-    return LyricsModel(service: "", lines: []);
+    return LyricsModel(service: "", lines: [], withTimeCode: false);
   }
 }

@@ -13,9 +13,13 @@ class LyricsModel {
   @HiveField(1)
   List<LyricsLineModel> lines;
 
+  @HiveField(2)
+  bool withTimeCode;
+
   LyricsModel({
     required this.service,
     required this.lines,
+    required this.withTimeCode,
   });
 
   factory LyricsModel.fromJson(Map<String, dynamic> json) {

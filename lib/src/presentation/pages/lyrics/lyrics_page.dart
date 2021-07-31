@@ -11,6 +11,8 @@ import 'package:lyricious/src/presentation/components/shared/music_wave.dart';
 import 'package:lyricious/src/presentation/components/shared/song_tile.dart';
 import 'package:lyricious/src/presentation/components/shimmers/lyrics_page_shimmer.dart';
 import 'package:lyricious/src/presentation/theme/colors.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:spotify_sdk/spotify_sdk.dart';
 
 class LyricsPage extends StatefulWidget {
   LyricsModel? lyrics;
@@ -23,12 +25,46 @@ class LyricsPage extends StatefulWidget {
 }
 
 class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
+  ItemScrollController _itemScrollController = ItemScrollController();
   ScrollController _scrollController = ScrollController();
   bool scroll = false;
   int speedFactor = 20;
 
   late Color color;
   LyricsModel? lyrics;
+
+  int currentLineIndex = 0;
+  int milliseconds = 0;
+  Timer? timer;
+
+  void lyricsFound(LyricsModel lyrics) async {
+    if (!lyrics.withTimeCode || !inject<AppCubit>().state.isSpotifyConnected) {
+      Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+      return;
+    }
+
+    final playerState = await SpotifySdk.getPlayerState();
+
+    if (playerState?.isPaused == true || playerState?.track == null) return;
+    // if (playerState!.track!.name != widget.song.name) return;
+
+    timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
+      milliseconds += 50;
+
+      if (milliseconds >= lyrics.lines[currentLineIndex].startTime! * 1000) {
+        print(lyrics.lines[currentLineIndex].text);
+        print(lyrics.lines[currentLineIndex].startTime);
+
+        // setState(() {
+        currentLineIndex += 1;
+        // });
+
+        _itemScrollController.scrollTo(index: currentLineIndex, duration: Duration(milliseconds: 200));
+      }
+
+      if (milliseconds > lyrics.lines.last.startTime! * 1000) timer.cancel();
+    });
+  }
 
   @override
   void initState() {
@@ -38,7 +74,8 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
 
     if (widget.lyrics != null) {
       lyrics = widget.lyrics;
-      Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+
+      lyricsFound(widget.lyrics!);
       return;
     }
 
@@ -46,8 +83,12 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
     final song = MemoryRepository.getFromLiked(key) ?? MemoryRepository.getFromRecently(key);
 
     if (song != null) {
-      lyrics = song.lyrics;
-      Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+      if (song.lyrics != null && song.lyrics!.lines.isNotEmpty) {
+        lyrics = song.lyrics;
+
+        lyricsFound(song.lyrics!);
+      }
+
       return;
     }
 
@@ -55,11 +96,11 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
       setState(() {
         lyrics = value;
 
-        if (value.lines.length > 0) {
+        if (value.lines.isNotEmpty) {
           widget.song.lyrics = lyrics;
           MemoryRepository.putToRecently(widget.song);
 
-          Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+          lyricsFound(value);
         }
       });
     });
@@ -70,6 +111,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
     inject<AppCubit>().fetchPlayerStatus();
 
     _scrollController.dispose();
+    timer?.cancel();
     super.dispose();
   }
 
@@ -91,7 +133,11 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
     if (scroll) {
       _scroll();
     } else {
-      _scrollController.animateTo(_scrollController.offset, duration: Duration(seconds: 1), curve: Curves.linear);
+      _scrollController.animateTo(
+        _scrollController.offset,
+        duration: Duration(milliseconds: 1500),
+        curve: Curves.linear,
+      );
     }
   }
 
@@ -108,6 +154,20 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
     }
 
     final lines = lyrics!.lines;
+
+    IndexedWidgetBuilder itemBuilder = (context, i) {
+      final style = TextStyle(
+        fontSize: 28,
+        fontFamily: "Gilroy",
+        fontWeight: FontWeight.w700,
+      );
+
+      if (i == 0) return Text("Source: ${lyrics!.service}", style: style);
+
+      return Text(lines[i - 1].text, style: style);
+    };
+
+    IndexedWidgetBuilder separatorBuilder = (context, i) => SizedBox(height: 35);
 
     return Scaffold(
       backgroundColor: AppColors.black,
@@ -154,25 +214,24 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
                               ).createShader(bounds);
                             },
                             blendMode: BlendMode.dstOut,
-                            child: ListView.separated(
-                              controller: _scrollController,
-                              physics: BouncingScrollPhysics(),
-                              itemBuilder: (context, i) {
-                                final style = TextStyle(
-                                  fontSize: 28,
-                                  fontFamily: "Gilroy",
-                                  fontWeight: FontWeight.w700,
-                                );
-
-                                if (i == 0) return Text("Source: ${lyrics!.service}", style: style);
-
-                                return Text(lines[i - 1].text, style: style);
-                              },
-                              separatorBuilder: (context, i) => SizedBox(height: 35),
-                              itemCount: lines.length + 1,
-                            ),
+                            child: lyrics!.withTimeCode
+                                ? ScrollablePositionedList.separated(
+                                    itemScrollController: _itemScrollController,
+                                    physics: BouncingScrollPhysics(),
+                                    itemBuilder: itemBuilder,
+                                    separatorBuilder: separatorBuilder,
+                                    itemCount: lines.length + 1,
+                                  )
+                                : ListView.separated(
+                                    controller: _scrollController,
+                                    physics: BouncingScrollPhysics(),
+                                    itemBuilder: itemBuilder,
+                                    separatorBuilder: separatorBuilder,
+                                    itemCount: lines.length + 1,
+                                  ),
                           ),
-                        ))
+                        ),
+                      )
                     : Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

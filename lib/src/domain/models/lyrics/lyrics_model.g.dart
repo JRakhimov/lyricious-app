@@ -19,17 +19,20 @@ class LyricsModelAdapter extends TypeAdapter<LyricsModel> {
     return LyricsModel(
       service: fields[0] as String,
       lines: (fields[1] as List).cast<LyricsLineModel>(),
+      withTimeCode: fields[2] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, LyricsModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.service)
       ..writeByte(1)
-      ..write(obj.lines);
+      ..write(obj.lines)
+      ..writeByte(2)
+      ..write(obj.withTimeCode);
   }
 
   @override
@@ -53,6 +56,7 @@ LyricsModel _$LyricsModelFromJson(Map<String, dynamic> json) {
     lines: (json['lines'] as List<dynamic>)
         .map((e) => LyricsLineModel.fromJson(e as Map<String, dynamic>))
         .toList(),
+    withTimeCode: json['withTimeCode'] as bool,
   );
 }
 
@@ -60,4 +64,5 @@ Map<String, dynamic> _$LyricsModelToJson(LyricsModel instance) =>
     <String, dynamic>{
       'service': instance.service,
       'lines': instance.lines,
+      'withTimeCode': instance.withTimeCode,
     };

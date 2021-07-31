@@ -1,14 +1,19 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lyricious/src/domain/models/models.dart';
+import 'package:translit/translit.dart';
 
 class MemoryRepository {
   static const LIKED_BOX = "liked";
   static const RECENTLY_BOX = "recently";
 
-  static String generateSongKey(SongModel song) => [
-        song.name.replaceAll(" ", ""),
-        song.artists[0].replaceAll(" ", ""),
-      ].join("_");
+  static String generateSongKey(SongModel song) {
+    final key = [
+      song.name.replaceAll(" ", ""),
+      song.artists[0].replaceAll(" ", ""),
+    ].join("_");
+
+    return Translit().toTranslit(source: key);
+  }
 
   static Box<SongModel> likedBox() => Hive.box<SongModel>(LIKED_BOX);
 
