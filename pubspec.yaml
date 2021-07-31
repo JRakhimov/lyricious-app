@@ -29,6 +29,7 @@ dependencies:
   shimmer: ^2.0.0
   auto_route: ^2.2.0
   spotify_sdk: ^2.1.0
+  like_button: ^2.0.2
   hive_flutter: ^1.1.0
   flutter_bloc: ^7.0.1
   flutter_dotenv: ^5.0.0
@@ -52,9 +53,9 @@ flutter:
     - assets/images/lyricious_transparent_text.png
 
   fonts:
-#    - family: AppIcons
-#      fonts:
-#        - asset: fonts/AppIcons.ttf
+    - family: AppIcons
+      fonts:
+        - asset: fonts/AppIcons.ttf
     - family: Comfortaa
       fonts:
         - asset: fonts/comfortaa/Comfortaa-Regular.ttf

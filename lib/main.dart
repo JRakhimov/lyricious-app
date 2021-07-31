@@ -24,6 +24,7 @@ void main() async {
   Hive.registerAdapter(LyricsLineModelAdapter());
 
   await Hive.openBox<SongModel>("recently");
+  await Hive.openBox<SongModel>("liked");
 
   GetIt.I.registerLazySingleton<AppCubit>(() => AppCubit());
 

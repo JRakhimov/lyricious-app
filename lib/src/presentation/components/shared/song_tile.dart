@@ -1,17 +1,24 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:like_button/like_button.dart';
 import 'package:lyricious/src/domain/models/models.dart';
+import 'package:lyricious/src/presentation/icons/app_icons.dart';
 import 'package:lyricious/src/presentation/theme/colors.dart';
 
 class SongTile extends StatelessWidget {
   SongModel song;
   Color? albumColor;
   bool isLight;
+  bool showLikeButton;
+  bool showMenuButton;
 
   SongTile({
     required this.song,
     this.albumColor,
     this.isLight = false,
+    this.showLikeButton = false,
+    this.showMenuButton = false,
   });
 
   @override
@@ -42,6 +49,9 @@ class SongTile extends StatelessWidget {
         ),
       ),
     );
+
+    final box = Hive.box<SongModel>("liked");
+    final key = "${song.name}_${[song.artists]}";
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -87,7 +97,36 @@ class SongTile extends StatelessWidget {
             ],
           ),
         ),
-        Row(children: [circle, SizedBox(width: 10), circle])
+        if (showLikeButton)
+          LikeButton(
+            size: 30,
+            circleColor: CircleColor(start: AppColors.violet, end: AppColors.red),
+            bubblesColor: BubblesColor(
+              dotPrimaryColor: AppColors.red,
+              dotSecondaryColor: AppColors.yellow,
+            ),
+            isLiked: box.get(key) != null,
+            likeBuilder: (bool isLiked) {
+              return Icon(
+                AppIcons.heart,
+                color: isLiked ? AppColors.red : Colors.grey,
+                size: 30,
+              );
+            },
+            onTap: (_) async {
+              final savedSong = box.get(key);
+
+              if (savedSong != null) {
+                box.delete(key);
+                return false;
+              }
+
+              box.put(key, song);
+              return true;
+            },
+          ),
+        if (showLikeButton && showMenuButton) SizedBox(width: 10),
+        if (showMenuButton) Row(children: [circle, SizedBox(width: 10), circle])
       ],
     );
   }

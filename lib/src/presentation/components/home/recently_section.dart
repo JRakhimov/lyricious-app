@@ -22,16 +22,17 @@ class HomeRecentlySection extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(width: 10),
-          Text(
-            "${box.length} songs",
-            style: TextStyle(
-              fontFamily: "Gilroy",
-              color: AppColors.greyBD,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+          if (box.length > 0) SizedBox(width: 10),
+          if (box.length > 0)
+            Text(
+              "${box.length} songs",
+              style: TextStyle(
+                fontFamily: "Gilroy",
+                color: AppColors.greyBD,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -42,7 +43,7 @@ class HomeRecentlySection extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 20),
       child: InkWell(
         onTap: () => AutoRouter.of(context).push(LyricsRoute(song: song, lyrics: song.lyrics)),
-        child: SongTile(song: song),
+        child: SongTile(song: song, showMenuButton: true),
       ),
     );
   }

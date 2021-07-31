@@ -107,6 +107,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
                 song: widget.song,
                 albumColor: color,
                 isLight: true,
+                showLikeButton: true,
               ),
             ),
             SizedBox(height: 30),
