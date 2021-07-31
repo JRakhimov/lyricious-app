@@ -9,16 +9,14 @@ part of 'lyrics_model.dart';
 LyricsModel _$LyricsModelFromJson(Map<String, dynamic> json) {
   return LyricsModel(
     service: json['service'] as String,
-    pageUrl: json['url'] as String,
-    content: json['content'] as String,
-    song: SongModel.fromJson(json['song'] as Map<String, dynamic>),
+    lines: (json['lines'] as List<dynamic>)
+        .map((e) => LyricsLineModel.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 
 Map<String, dynamic> _$LyricsModelToJson(LyricsModel instance) =>
     <String, dynamic>{
       'service': instance.service,
-      'url': instance.pageUrl,
-      'content': instance.content,
-      'song': instance.song,
+      'lines': instance.lines,
     };

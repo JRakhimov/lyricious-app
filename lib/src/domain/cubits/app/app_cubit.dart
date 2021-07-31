@@ -38,6 +38,14 @@ class AppCubit extends Cubit<AppState> {
     emit(state.copyWith(spotifyPlayerStatus: status));
   }
 
+  void fetchPlayerStatus() async {
+    final status = await SpotifySdk.getPlayerState();
+
+    print('L44 status: ${status}');
+
+    emit(state.copyWith(spotifyPlayerStatus: status));
+  }
+
   Future<bool> connectSpotify() async {
     final status = await SpotifySdk.connectToSpotifyRemote(
       clientId: dotenv.env["SPOTIFY_CLIENT_ID"]!,

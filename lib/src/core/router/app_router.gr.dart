@@ -29,8 +29,7 @@ class AppRouter extends _i1.RootStackRouter {
     LyricsRoute.name: (routeData) => _i1.CupertinoPageX<dynamic>(
         routeData: routeData,
         builder: (data) {
-          final args = data.argsAs<LyricsRouteArgs>(
-              orElse: () => const LyricsRouteArgs());
+          final args = data.argsAs<LyricsRouteArgs>();
           return _i3.LyricsPage(lyrics: args.lyrics, song: args.song);
         })
   };
@@ -56,7 +55,7 @@ class HomeRoute extends _i1.PageRouteInfo {
 }
 
 class LyricsRoute extends _i1.PageRouteInfo<LyricsRouteArgs> {
-  LyricsRoute({_i4.LyricsModel? lyrics, _i4.SongModel? song})
+  LyricsRoute({_i4.LyricsModel? lyrics, required _i4.SongModel song})
       : super(name,
             path: '/lyrics-page',
             args: LyricsRouteArgs(lyrics: lyrics, song: song));
@@ -65,9 +64,9 @@ class LyricsRoute extends _i1.PageRouteInfo<LyricsRouteArgs> {
 }
 
 class LyricsRouteArgs {
-  const LyricsRouteArgs({this.lyrics, this.song});
+  const LyricsRouteArgs({this.lyrics, required this.song});
 
   final _i4.LyricsModel? lyrics;
 
-  final _i4.SongModel? song;
+  final _i4.SongModel song;
 }

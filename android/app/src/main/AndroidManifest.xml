@@ -3,7 +3,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="Lyricious"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -39,4 +41,9 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+
+<!--    <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--        <background android:drawable="@color/ic_launcher_background" />-->
+<!--        <foreground android:drawable="@mipmap/ic_launcher_foreground" />-->
+<!--    </adaptive-icon>-->
 </manifest>

@@ -9,15 +9,18 @@ part of 'song_model.dart';
 SongModel _$SongModelFromJson(Map<String, dynamic> json) {
   return SongModel(
     name: json['name'] as String,
-    artist: json['artist'] as String,
-    album: json['album'] as String?,
+    artists:
+        (json['artists'] as List<dynamic>).map((e) => e as String).toList(),
+    lyrics: json['lyrics'] == null
+        ? null
+        : LyricsModel.fromJson(json['lyrics'] as Map<String, dynamic>),
     albumPic: json['albumPic'] as String?,
   );
 }
 
 Map<String, dynamic> _$SongModelToJson(SongModel instance) => <String, dynamic>{
       'name': instance.name,
-      'artist': instance.artist,
-      'album': instance.album,
+      'artists': instance.artists,
+      'lyrics': instance.lyrics,
       'albumPic': instance.albumPic,
     };

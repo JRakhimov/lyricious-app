@@ -6,16 +6,11 @@ part 'lyrics_model.g.dart';
 @JsonSerializable()
 class LyricsModel {
   String service;
-  @JsonKey(name: "url")
-  String pageUrl;
-  String content;
-  SongModel song;
+  List<LyricsLineModel> lines;
 
   LyricsModel({
     required this.service,
-    required this.pageUrl,
-    required this.content,
-    required this.song,
+    required this.lines,
   });
 
   factory LyricsModel.fromJson(Map<String, dynamic> json) {

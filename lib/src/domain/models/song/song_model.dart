@@ -1,18 +1,19 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:lyricious/src/domain/models/lyrics/lyrics_model.dart';
 
 part 'song_model.g.dart';
 
 @JsonSerializable()
 class SongModel {
   String name;
-  String artist;
-  String? album;
+  List<String> artists;
+  LyricsModel? lyrics;
   String? albumPic;
 
   SongModel({
     required this.name,
-    required this.artist,
-    this.album,
+    required this.artists,
+    this.lyrics,
     this.albumPic,
   });
 

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lyricious/src/core/utils/extensions.dart';
+import 'package:lyricious/src/domain/cubits/app/app_cubit.dart';
 import 'package:lyricious/src/presentation/components/components.dart';
 import 'package:lyricious/src/presentation/components/home/header.dart';
 import 'package:lyricious/src/presentation/pages/home/cubit/home_page_cubit.dart';
@@ -12,7 +13,28 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance!.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    WidgetsBinding.instance!.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      getCubit<AppCubit>(context).fetchPlayerStatus();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

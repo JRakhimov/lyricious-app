@@ -36,17 +36,15 @@ class __HeaderState extends State<_Header> {
             children: [
               Container(height: 20, child: MusicVisualizer()),
               SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  [
-                    state.spotifyPlayerStatus!.track!.artist.name,
-                    state.spotifyPlayerStatus!.track!.name,
-                  ].join(" - "),
-                  maxLines: 1,
-                  softWrap: false,
-                  overflow: TextOverflow.fade,
-                  style: style,
-                ),
+              Text(
+                [
+                  state.spotifyPlayerStatus!.track!.artist.name,
+                  state.spotifyPlayerStatus!.track!.name,
+                ].join(" - "),
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.fade,
+                style: style,
               ),
             ],
           ),
@@ -88,10 +86,9 @@ class __HeaderState extends State<_Header> {
                           AutoRouter.of(context).push(
                             LyricsRoute(
                               song: SongModel(
-                                artist: state.spotifyPlayerStatus!.track!.artist.name,
+                                artists: [state.spotifyPlayerStatus!.track!.artist.name],
                                 name: state.spotifyPlayerStatus!.track!.name,
                                 albumPic: state.spotifyPlayerStatus!.track!.imageUri.raw,
-                                album: state.spotifyPlayerStatus!.track!.album.name,
                               ),
                             ),
                           );

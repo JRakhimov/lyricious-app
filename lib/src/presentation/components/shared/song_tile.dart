@@ -77,7 +77,7 @@ class SongTile extends StatelessWidget {
               ),
               SizedBox(height: 2.5),
               Text(
-                song.artist,
+                song.artists[0],
                 style: TextStyle(
                   color: isLight ? AppColors.white : AppColors.black,
                   fontSize: 15,

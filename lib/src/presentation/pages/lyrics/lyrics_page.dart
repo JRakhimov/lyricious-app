@@ -11,9 +11,9 @@ import 'package:lyricious/src/presentation/theme/colors.dart';
 
 class LyricsPage extends StatefulWidget {
   LyricsModel? lyrics;
-  SongModel? song;
+  SongModel song;
 
-  LyricsPage({this.lyrics, this.song});
+  LyricsPage({this.lyrics, required this.song});
 
   @override
   _LyricsPageState createState() => _LyricsPageState();
@@ -39,11 +39,11 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
       return;
     }
 
-    LyricsRepository.getLyrics(name: widget.song!.name, artist: widget.song!.artist).then((value) {
+    LyricsRepository.getLyrics(name: widget.song.name, artist: widget.song.artists[0]).then((value) {
       setState(() {
         lyrics = value;
 
-        if (value.content != "") {
+        if (value.lines.length > 0) {
           Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
         }
       });
@@ -90,7 +90,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
       );
     }
 
-    final lines = lyrics!.content.replaceAll("\n\n", "\n").split("\n");
+    final lines = lyrics!.lines;
 
     return Scaffold(
       backgroundColor: AppColors.black,
@@ -100,7 +100,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
           children: [
             SafeArea(
               child: SongTile(
-                song: lyrics!.song,
+                song: widget.song,
                 albumColor: color,
                 isLight: true,
               ),
@@ -109,7 +109,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
             Expanded(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
-                child: lines[0] != ""
+                child: lines.length > 0
                     ? Container(
                         decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(30)),
                         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
@@ -133,7 +133,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
 
                               if (i == 0) return Text("Source: ${lyrics!.service}", style: style);
 
-                              return Text(lines[i - 1], style: style);
+                              return Text(lines[i - 1].text, style: style);
                             },
                             separatorBuilder: (context, i) => SizedBox(height: 35),
                             itemCount: lines.length + 1,
