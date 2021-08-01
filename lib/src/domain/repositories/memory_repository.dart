@@ -12,7 +12,7 @@ class MemoryRepository {
       song.artists[0].replaceAll(" ", ""),
     ].join("_");
 
-    return Translit().toTranslit(source: key);
+    return Translit().toTranslit(source: key).substring(0, 255);
   }
 
   static Box<SongModel> likedBox() => Hive.box<SongModel>(LIKED_BOX);

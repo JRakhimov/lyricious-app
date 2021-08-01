@@ -19,8 +19,6 @@ class AppCubit extends Cubit<AppState> {
       await SpotifySdk.getLibraryState(
         spotifyUri: "https://open.spotify.com/track/6gMKBgWDe6bkO6iSimuUC8?si=9a2e40b69d674fef",
       );
-
-      await this.fetchPlayerStatus();
     } catch (e) {
       final isDisconnected = e.toString().contains("SpotifyDisconnectedException");
 
@@ -32,7 +30,6 @@ class AppCubit extends Cubit<AppState> {
   }
 
   void connectionStatusListener(ConnectionStatus status) {
-    print('Connection status: ${status.connected}');
     emit(state.copyWith(isSpotifyConnected: status.connected));
   }
 
@@ -41,6 +38,10 @@ class AppCubit extends Cubit<AppState> {
   }
 
   Future<void> fetchPlayerStatus() async {
+    Future.delayed(Duration(milliseconds: 5000), () {
+      playerStatus = SpotifySdk.subscribePlayerState()..listen(playerStatusListener);
+    });
+
     final status = await SpotifySdk.getPlayerState();
 
     emit(state.copyWith(spotifyPlayerStatus: status));

@@ -33,8 +33,8 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
   late Color color;
   LyricsModel? lyrics;
 
-  int currentLineIndex = 0;
-  int milliseconds = 0;
+  int _currentLineIndex = 0;
+  int _milliseconds = 0;
   Timer? timer;
 
   void lyricsFound(LyricsModel lyrics) async {
@@ -45,24 +45,28 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
 
     final playerState = await SpotifySdk.getPlayerState();
 
-    if (playerState?.isPaused == true || playerState?.track == null) return;
-    // if (playerState!.track!.name != widget.song.name) return;
+    // playerState?.isPaused == true ||
+    // if (playerState?.track == null) {
+    //   Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+    //   return;
+    // }
+
+    // if (playerState!.track!.name != widget.song.name) {
+    //   Future.delayed(Duration(seconds: 1)).then((value) => _toggleScrolling());
+    //   return;
+    // }
 
     timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
-      milliseconds += 50;
+      _milliseconds += 50;
 
-      if (milliseconds >= lyrics.lines[currentLineIndex].startTime! * 1000) {
-        print(lyrics.lines[currentLineIndex].text);
-        print(lyrics.lines[currentLineIndex].startTime);
+      if (_milliseconds >= lyrics.lines[_currentLineIndex].startTime! * 1000) {
+        setState(() => _currentLineIndex += 1);
 
-        // setState(() {
-        currentLineIndex += 1;
-        // });
-
-        _itemScrollController.scrollTo(index: currentLineIndex, duration: Duration(milliseconds: 200));
+        if (_itemScrollController.isAttached)
+          _itemScrollController.scrollTo(index: _currentLineIndex, duration: Duration(milliseconds: 200));
       }
 
-      if (milliseconds > lyrics.lines.last.startTime! * 1000) timer.cancel();
+      if (_milliseconds > lyrics.lines.last.startTime! * 1000) timer.cancel();
     });
   }
 
@@ -92,7 +96,11 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
       return;
     }
 
-    LyricsRepository.getLyrics(name: widget.song.name, artist: widget.song.artists[0]).then((value) {
+    LyricsRepository.getLyrics(
+      name: widget.song.name,
+      artist: widget.song.artists[0],
+      duration: widget.song.duration,
+    ).then((value) {
       setState(() {
         lyrics = value;
 
@@ -141,6 +149,19 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
     }
   }
 
+  _onLineTap(int index) {
+    final currentLine = lyrics!.lines[index - 2];
+    final nextLine = lyrics!.lines[index >= lyrics!.lines.length ? index - 2 : index - 1];
+    final difference = (nextLine.startTime! - currentLine.startTime!) * 1000;
+
+    setState(() {
+      _currentLineIndex = index - 2;
+      _milliseconds = (currentLine.startTime! * 1000 - difference).toInt();
+    });
+
+    _itemScrollController.scrollTo(index: _currentLineIndex, duration: Duration(milliseconds: 200));
+  }
+
   @override
   Widget build(BuildContext context) {
     if (lyrics == null) {
@@ -156,15 +177,26 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
     final lines = lyrics!.lines;
 
     IndexedWidgetBuilder itemBuilder = (context, i) {
-      final style = TextStyle(
-        fontSize: 28,
-        fontFamily: "Gilroy",
-        fontWeight: FontWeight.w700,
+      if ([0, 1].contains(i)) return SizedBox();
+
+      final live = lyrics!.withTimeCode && timer != null;
+
+      return InkWell(
+        onTap: () => _onLineTap(i),
+        child: Text(
+          lines[i - 2].text,
+          style: TextStyle(
+            fontSize: 28,
+            fontFamily: "Gilroy",
+            fontWeight: FontWeight.w700,
+            color: live
+                ? _currentLineIndex == i - 2
+                    ? AppColors.black
+                    : AppColors.white.withOpacity(0.65)
+                : AppColors.white,
+          ),
+        ),
       );
-
-      if (i == 0) return Text("Source: ${lyrics!.service}", style: style);
-
-      return Text(lines[i - 1].text, style: style);
     };
 
     IndexedWidgetBuilder separatorBuilder = (context, i) => SizedBox(height: 35);
@@ -214,20 +246,20 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
                               ).createShader(bounds);
                             },
                             blendMode: BlendMode.dstOut,
-                            child: lyrics!.withTimeCode
+                            child: lyrics!.withTimeCode && timer != null
                                 ? ScrollablePositionedList.separated(
                                     itemScrollController: _itemScrollController,
                                     physics: BouncingScrollPhysics(),
                                     itemBuilder: itemBuilder,
                                     separatorBuilder: separatorBuilder,
-                                    itemCount: lines.length + 1,
+                                    itemCount: lines.length + 2,
                                   )
                                 : ListView.separated(
                                     controller: _scrollController,
                                     physics: BouncingScrollPhysics(),
                                     itemBuilder: itemBuilder,
                                     separatorBuilder: separatorBuilder,
-                                    itemCount: lines.length + 1,
+                                    itemCount: lines.length + 2,
                                   ),
                           ),
                         ),
@@ -236,10 +268,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              height: 100,
-                              child: MusicVisualizerColorful(),
-                            ),
+                            Container(height: 100, child: MusicVisualizerColorful()),
                             SizedBox(height: 20),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 30),

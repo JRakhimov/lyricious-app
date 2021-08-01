@@ -93,6 +93,7 @@ class __HeaderState extends State<_Header> {
                                 artists: [state.spotifyPlayerStatus!.track!.artist.name],
                                 name: state.spotifyPlayerStatus!.track!.name,
                                 albumPic: "https://i.scdn.co/image/${urlSplitted.last}",
+                                duration: state.spotifyPlayerStatus!.track!.duration,
                               ),
                             ),
                           );
@@ -100,6 +101,7 @@ class __HeaderState extends State<_Header> {
                       : () async {
                           setState(() => isLoading = true);
                           await cubit.connectSpotify();
+                          await cubit.fetchPlayerStatus();
                           setState(() => isLoading = false);
                         },
                   onLongPress: () => SpotifySdk.disconnect(),

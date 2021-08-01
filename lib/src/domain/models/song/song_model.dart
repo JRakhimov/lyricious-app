@@ -19,11 +19,15 @@ class SongModel {
   @HiveField(3)
   String? albumPic;
 
+  @HiveField(4)
+  int? duration;
+
   SongModel({
     required this.name,
     required this.artists,
     this.lyrics,
     this.albumPic,
+    this.duration,
   });
 
   factory SongModel.fromJson(Map<String, dynamic> json) {

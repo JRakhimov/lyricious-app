@@ -21,13 +21,14 @@ class SongModelAdapter extends TypeAdapter<SongModel> {
       artists: (fields[1] as List).cast<String>(),
       lyrics: fields[2] as LyricsModel?,
       albumPic: fields[3] as String?,
+      duration: fields[4] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SongModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class SongModelAdapter extends TypeAdapter<SongModel> {
       ..writeByte(2)
       ..write(obj.lyrics)
       ..writeByte(3)
-      ..write(obj.albumPic);
+      ..write(obj.albumPic)
+      ..writeByte(4)
+      ..write(obj.duration);
   }
 
   @override
@@ -62,6 +65,7 @@ SongModel _$SongModelFromJson(Map<String, dynamic> json) {
         ? null
         : LyricsModel.fromJson(json['lyrics'] as Map<String, dynamic>),
     albumPic: json['albumPic'] as String?,
+    duration: json['duration'] as int?,
   );
 }
 
@@ -70,4 +74,5 @@ Map<String, dynamic> _$SongModelToJson(SongModel instance) => <String, dynamic>{
       'artists': instance.artists,
       'lyrics': instance.lyrics,
       'albumPic': instance.albumPic,
+      'duration': instance.duration,
     };
