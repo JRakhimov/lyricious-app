@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-msedge",
+      "request": "launch",
+      "name": "Launch Edge against localhost",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Flutter",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "args": ["--no-sound-null-safety"]
+    }
+  ]
+}
