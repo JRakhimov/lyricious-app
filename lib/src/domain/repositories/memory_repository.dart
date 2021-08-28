@@ -39,8 +39,15 @@ class MemoryRepository {
     Hive.box<HiveSongModel>(LIKED_BOX).clear();
   }
 
-  static putToRecently(SongModel song) {
-    Hive.box<HiveSongModel>(RECENTLY_BOX).put(
+  static putToRecently(SongModel song) async {
+    final box = Hive.box<HiveSongModel>(RECENTLY_BOX);
+
+    if (box.length > 15) {
+      final values = box.values.toList()..sort((a, b) => b.actionDate.compareTo(a.actionDate));
+      await box.delete(generateSongKey(values.last.song));
+    }
+
+    box.put(
       generateSongKey(song),
       HiveSongModel(actionDate: DateTime.now(), song: song),
     );
