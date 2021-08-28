@@ -28,11 +28,13 @@ dependencies:
   get_it: ^7.2.0
   shimmer: ^2.0.0
   translit: ^2.0.0
+  wakelock: ^0.5.3+3
   auto_route: ^2.2.0
   spotify_sdk: ^2.1.0
   like_button: ^2.0.2
   hive_flutter: ^1.1.0
   flutter_bloc: ^7.0.1
+  flutter_svg: ^0.22.0
   flutter_dotenv: ^5.0.0
   freezed_annotation: ^0.14.2
   cached_network_image: ^3.1.0
@@ -53,6 +55,7 @@ flutter:
   assets:
     - .env
     - assets/images/lyricious_transparent_text.png
+    - assets/images/spotify_icon.svg
 
   fonts:
     - family: AppIcons

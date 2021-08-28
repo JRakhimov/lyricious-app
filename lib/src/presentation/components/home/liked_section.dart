@@ -8,7 +8,7 @@ import 'package:lyricious/src/presentation/components/components.dart';
 import 'package:lyricious/src/presentation/theme/colors.dart';
 
 class HomeLikedSection extends StatelessWidget {
-  Widget _likedText(Box<SongModel> box) {
+  Widget _likedText(Box<HiveSongModel> box) {
     return Padding(
       padding: EdgeInsets.only(bottom: 20),
       child: Row(
@@ -44,7 +44,7 @@ class HomeLikedSection extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 20),
       child: InkWell(
         onTap: () => AutoRouter.of(context).push(LyricsRoute(song: song, lyrics: song.lyrics)),
-        child: SongTile(song: song, showMenuButton: true),
+        child: SongTile(song: song),
       ),
     );
   }
@@ -53,11 +53,13 @@ class HomeLikedSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: MemoryRepository.likedBox().listenable(),
-      builder: (BuildContext context, Box<SongModel> box, Widget? child) {
+      builder: (BuildContext context, Box<HiveSongModel> box, Widget? child) {
+        final values = box.values.toList()..sort((a, b) => b.actionDate.compareTo(a.actionDate));
+
         return Column(
           children: [
             _likedText(box),
-            for (final song in box.values) _song(context, song),
+            for (final hiveSong in values) _song(context, hiveSong.song),
           ],
         );
       },

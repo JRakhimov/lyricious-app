@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:like_button/like_button.dart';
 import 'package:lyricious/src/domain/models/models.dart';
 import 'package:lyricious/src/domain/repositories/memory_repository.dart';
@@ -12,6 +13,7 @@ class SongTile extends StatelessWidget {
   bool isLight;
   bool showLikeButton;
   bool showMenuButton;
+  bool showSpotifyIcon;
 
   SongTile({
     required this.song,
@@ -19,6 +21,7 @@ class SongTile extends StatelessWidget {
     this.isLight = false,
     this.showLikeButton = false,
     this.showMenuButton = false,
+    this.showSpotifyIcon = false,
   });
 
   @override
@@ -53,21 +56,41 @@ class SongTile extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        if (song.albumPic != null)
-          Container(
-            width: 60,
-            height: 60,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12.5),
-              child: CachedNetworkImage(
-                imageUrl: song.albumPic!,
-                placeholder: (_, __) => albumPicStock,
-                errorWidget: (_, __, ___) => albumPicStock,
+        Stack(
+          children: [
+            if (song.albumPic != null)
+              Container(
+                width: 60,
+                height: 60,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.5),
+                  child: CachedNetworkImage(
+                    imageUrl: song.albumPic!,
+                    placeholder: (_, __) => albumPicStock,
+                    errorWidget: (_, __, ___) => albumPicStock,
+                  ),
+                ),
+              )
+            else
+              albumPicStock,
+            if (showSpotifyIcon)
+              Positioned(
+                bottom: -2,
+                right: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.black,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: SvgPicture.asset(
+                    "assets/images/spotify_icon.svg",
+                    width: 25,
+                    height: 25,
+                  ),
+                ),
               ),
-            ),
-          )
-        else
-          albumPicStock,
+          ],
+        ),
         SizedBox(width: 20),
         Expanded(
           child: Column(

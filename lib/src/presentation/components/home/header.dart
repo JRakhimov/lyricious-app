@@ -23,7 +23,15 @@ class __HeaderState extends State<_Header> {
 
     if (isLoading) return Text("Connecting", style: style);
 
-    if (!state.isSpotifyConnected) return Text("Connect your Spotify account", style: style);
+    if (!state.isSpotifyConnected)
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(width: 5),
+          Flexible(child: Text("Connect your Spotify account", style: style)),
+        ],
+      );
 
     if (state.spotifyPlayerStatus != null) {
       if (state.spotifyPlayerStatus!.isPaused) return Text("Spotify paused", style: style);

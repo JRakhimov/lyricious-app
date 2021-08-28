@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lyricious/src/app.dart';
 import 'package:lyricious/src/core/utils/utils.dart';
 import 'package:lyricious/src/domain/cubits/app/app_cubit.dart';
+import 'package:lyricious/src/domain/models/hive_song/hive_song_model.dart';
 import 'package:lyricious/src/domain/models/models.dart';
 
 // flutter pub run flutter_launcher_icons:main
@@ -21,10 +22,11 @@ void main() async {
 
   Hive.registerAdapter(SongModelAdapter());
   Hive.registerAdapter(LyricsModelAdapter());
+  Hive.registerAdapter(HiveSongModelAdapter());
   Hive.registerAdapter(LyricsLineModelAdapter());
 
-  await Hive.openBox<SongModel>("recently");
-  await Hive.openBox<SongModel>("liked");
+  await Hive.openBox<HiveSongModel>("recently");
+  await Hive.openBox<HiveSongModel>("liked");
 
   GetIt.I.registerLazySingleton<AppCubit>(() => AppCubit());
 

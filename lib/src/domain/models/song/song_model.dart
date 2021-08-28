@@ -1,10 +1,11 @@
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:lyricious/src/domain/models/lyrics/lyrics_model.dart';
+import 'package:lyricious/src/domain/models/models.dart';
 
 part 'song_model.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: HiveTypeIds.song)
 @JsonSerializable()
 class SongModel {
   @HiveField(0)

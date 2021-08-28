@@ -13,6 +13,7 @@ import 'package:lyricious/src/presentation/components/shimmers/lyrics_page_shimm
 import 'package:lyricious/src/presentation/theme/colors.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
+import 'package:wakelock/wakelock.dart';
 
 class LyricsPage extends StatefulWidget {
   LyricsModel? lyrics;
@@ -73,6 +74,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    Wakelock.enable();
 
     color = AppColors.getRandomColor();
 
@@ -84,13 +86,13 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
     }
 
     final key = MemoryRepository.generateSongKey(widget.song);
-    final song = MemoryRepository.getFromLiked(key) ?? MemoryRepository.getFromRecently(key);
+    final hiveSong = MemoryRepository.getFromLiked(key) ?? MemoryRepository.getFromRecently(key);
 
-    if (song != null) {
-      if (song.lyrics != null && song.lyrics!.lines.isNotEmpty) {
-        lyrics = song.lyrics;
+    if (hiveSong != null) {
+      if (hiveSong.song.lyrics != null && hiveSong.song.lyrics!.lines.isNotEmpty) {
+        lyrics = hiveSong.song.lyrics;
 
-        lyricsFound(song.lyrics!);
+        lyricsFound(hiveSong.song.lyrics!);
       }
 
       return;
@@ -120,6 +122,7 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
 
     _scrollController.dispose();
     timer?.cancel();
+    Wakelock.disable();
     super.dispose();
   }
 
@@ -212,7 +215,8 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
                 song: widget.song,
                 albumColor: color,
                 isLight: true,
-                showLikeButton: true,
+                showSpotifyIcon: true,
+                showLikeButton: lyrics != null && lyrics!.lines.isNotEmpty,
               ),
             ),
             SizedBox(height: 30),
@@ -273,9 +277,13 @@ class _LyricsPageState extends State<LyricsPage> with TickerProviderStateMixin {
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 30),
                               child: Text(
-                                "We didn't find the lyrics for this song, but you have great taste :)",
+                                "We couldn't find the lyrics for this song, but you have great taste :)",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, fontFamily: "Gilroy"),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: "Gilroy",
+                                ),
                               ),
                             ),
                           ],

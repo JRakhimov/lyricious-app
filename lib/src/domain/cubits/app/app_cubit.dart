@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:lyricious/src/core/services/services.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
@@ -15,13 +16,14 @@ class AppCubit extends Cubit<AppState> {
   late Stream<PlayerState> playerStatus;
 
   void initCubit() async {
+    if (dotenv.env["LYRICS_HOST"]!.contains("glitch")) HttpService.dio.get("/").catchError((e) => null);
+
     try {
       await SpotifySdk.getLibraryState(
         spotifyUri: "https://open.spotify.com/track/6gMKBgWDe6bkO6iSimuUC8?si=9a2e40b69d674fef",
       );
     } catch (e) {
       final isDisconnected = e.toString().contains("SpotifyDisconnectedException");
-
       emit(state.copyWith(isSpotifyConnected: !isDisconnected));
     }
 

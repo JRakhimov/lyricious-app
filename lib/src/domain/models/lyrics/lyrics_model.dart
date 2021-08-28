@@ -4,7 +4,7 @@ import 'package:lyricious/src/domain/models/models.dart';
 
 part 'lyrics_model.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: HiveTypeIds.lyrics)
 @JsonSerializable()
 class LyricsModel {
   @HiveField(0)
